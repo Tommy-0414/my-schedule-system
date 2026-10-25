@@ -3,17 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>免費線上行程表與排程系統 - 高效時間管理與學生必備工具 | Schedule Hub</title>
-    <meta name="description" content="完全免費、免註冊的線上行程管理工具！專為學生與背包客打造，整合 Google 試算表做為雲端資料庫，支援智慧週期批量生成、自動排序與即時編輯。">
-    <meta name="keywords" content="行程表, 線上行程表, 免費行程表工具, Google試算表行程表, 排程系統, 學生時間管理, 批量行程生成">
-    <meta name="author" content="Schedule Hub Team">
     
-    <!-- Open Graph for Social Sharing -->
-    <meta property="og:title" content="免費線上行程表與排程系統 | 免註冊零成本管理">
-    <meta property="og:description" content="結合電競龐克視覺與高效率管理，支援 Google 試算表連動與週期行程批量生成！">
-    <meta property="og:type" content="website">
-
-    <!-- 科幻字體 Orbitron 與 內建系統字體 -->
+    <!-- 🌟 SEO 關鍵字優化 -->
+    <title>免費線上行程表工具｜免註冊、連動試算表的極簡行程管理系統</title>
+    <meta name="description" content="最適合學生與背包客的免費線上行程表建立工具！免註冊帳號、不收費用，直接連動 Google 試算表當資料庫。支援智慧週期批量生成行程、一鍵修改微調，並可秒產出公開分享連結。">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
@@ -21,253 +15,299 @@
     <style>
         :root {
             --bg-primary: #0a0c10;
-            --bg-card: rgba(18, 22, 31, 0.85);
+            --bg-card: rgba(18, 22, 31, 0.94);
             --neon-blue: #00f5d4;
             --neon-purple: #7b2cbf;
             --rog-red: #ff0055;
             --text-main: #f0f6fc;
             --text-muted: #8b949e;
-            --border-line: rgba(0, 245, 212, 0.25);
+            --border-line: rgba(0, 245, 212, 0.3);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            background-color: var(--bg-primary);
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: var(--bg-primary); 
             color: var(--text-main);
-            font-family: 'Noto Sans TC', sans-serif;
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(255, 0, 85, 0.12), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 245, 212, 0.08), transparent 40%);
+            position: relative;
+            padding: 50px 0;
         }
 
-        /* ROG G16 頂部與底部燈條脈衝 */
+        /* ⚡ 頂部 ROG 經典炫彩流光條 */
         .rog-top-bar {
-            height: 4px;
-            width: 100%;
+            height: 4px; width: 100%; position: fixed; top: 0; left: 0; z-index: 100;
             background: linear-gradient(90deg, var(--rog-red), var(--neon-blue), var(--neon-purple), var(--rog-red));
             background-size: 300% 100%;
             animation: rogStream 5s linear infinite, rogBreathing 3s ease-in-out infinite alternate;
         }
+        @keyframes rogStream { 0% { background-position: 0% 0%; } 100% { background-position: 300% 0%; } }
+        @keyframes rogBreathing { 0% { box-shadow: 0 0 8px rgba(0, 245, 212, 0.4); } 100% { box-shadow: 0 0 22px rgba(255, 0, 85, 0.8); } }
 
-        @keyframes rogStream {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 300% 0%; }
+        #space-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; 
         }
 
-        @keyframes rogBreathing {
-            0% { box-shadow: 0 0 10px rgba(0, 245, 212, 0.4); }
-            100% { box-shadow: 0 0 25px rgba(255, 0, 85, 0.8); }
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            width: 100%;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .logo-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #fff 30%, var(--neon-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 245, 212, 0.3);
-            margin-bottom: 15px;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        /* 賽博機甲切角卡片 */
-        .cyber-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-line);
-            padding: 35px;
-            margin-bottom: 30px;
+        /* 核心卡片 - ROG 剪角風格 */
+        .card { 
+            background: var(--bg-card); 
+            backdrop-filter: blur(25px);
+            padding: 40px; 
+            max-width: 440px; 
+            width: 90%;
+            z-index: 10;
             position: relative;
-            clip-path: polygon(
-                0 0, 
-                calc(100% - 20px) 0, 
-                100% 20px, 
-                100% 100%, 
-                20px 100%, 
-                0 calc(100% - 20px)
-            );
-            backdrop-filter: blur(10px);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-line);
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+            animation: fadeInCard 0.8s ease-out;
+            margin-bottom: 40px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
         }
 
-        .cyber-card:hover {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 20px rgba(0, 245, 212, 0.15);
+        h1 { 
+            font-family: 'Orbitron', sans-serif;
+            color: #ffffff; 
+            margin-bottom: 8px; 
+            font-size: 1.8rem; 
+            text-align: center;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 245, 212, 0.3);
+        }
+        
+        .sub-title { 
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue); 
+            font-size: 0.85rem; 
+            margin-bottom: 25px; 
+            letter-spacing: 3px; 
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 0 8px rgba(0, 245, 212, 0.4);
+        }
+        
+        .notice-box {
+            background: rgba(0, 245, 212, 0.05);
+            color: #fef08a; 
+            padding: 16px;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+            border-left: 3px solid var(--neon-blue);
+            line-height: 1.6;
+            text-align: left;
+            min-height: 65px;
+            font-family: monospace;
         }
 
-        .cyber-card h2 {
-            font-size: 1.5rem;
-            color: var(--neon-blue);
-            margin-bottom: 20px;
+        .cursor { font-weight: bold; color: var(--neon-blue); animation: blink 0.7s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        
+        .btn-admin { 
+            padding: 18px; 
+            text-decoration: none; 
+            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
+            font-weight: 800; 
+            color: var(--bg-primary);
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            box-shadow: 0 0 20px rgba(0, 245, 212, 0.4);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
             display: flex;
+            justify-content: center;
             align-items: center;
             gap: 10px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
         }
 
-        .cyber-card h2::before {
-            content: '//';
-            color: var(--rog-red);
-            font-family: 'Orbitron', sans-serif;
+        .btn-admin:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #fff, var(--neon-blue));
+            box-shadow: 0 0 30px var(--neon-blue);
         }
 
-        .btn-group {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 40px 0;
-        }
-
-        /* 電競龐克按鈕 */
-        .cyber-btn {
-            display: inline-block;
-            padding: 15px 35px;
-            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-            text-decoration: none;
-            color: #fff;
-            background: rgba(0, 245, 212, 0.1);
-            border: 1px solid var(--neon-blue);
-            clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-            transition: all 0.25s ease;
+        /* SEO 說明區塊 */
+        .seo-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-line);
+            padding: 30px;
+            max-width: 760px;
+            width: 90%;
+            z-index: 10;
             position: relative;
-            cursor: pointer;
-        }
-
-        .cyber-btn-primary {
-            background: linear-gradient(135deg, rgba(255, 0, 85, 0.8), rgba(123, 44, 191, 0.8));
-            border-color: var(--rog-red);
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
-        }
-
-        .cyber-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px var(--neon-blue);
-            background: var(--neon-blue);
-            color: var(--bg-primary);
-        }
-
-        .cyber-btn-primary:hover {
-            box-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
-            background: linear-gradient(135deg, var(--rog-red), var(--neon-purple));
-            color: #fff;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .feature-item {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 20px;
-            border-left: 3px solid var(--neon-blue);
-        }
-
-        .feature-item h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .feature-item p {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            line-height: 1.8;
             color: var(--text-muted);
-            font-size: 0.95rem;
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
         }
-
-        footer {
-            text-align: center;
-            padding: 25px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        .seo-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffffff;
+            font-size: 1.3rem;
+            border-left: 4px solid var(--neon-blue);
+            padding-left: 12px;
+            margin-top: 15px;
+            margin-bottom: 10px;
         }
+        .seo-section ul, .seo-section ol { padding-left: 20px; }
+        .seo-section li { margin-bottom: 8px; }
+        .highlight { color: var(--neon-blue); font-weight: bold; }
+        .story-text { color: var(--text-main); font-style: italic; }
 
-        footer a {
-            color: var(--neon-blue);
-            text-decoration: none;
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-
-    <!-- ROG 呼吸燈邊條 -->
     <div class="rog-top-bar"></div>
+    <canvas id="space-canvas"></canvas>
 
-    <div class="container">
-        <header>
-            <div class="logo-title">SCHEDULE HUB</div>
-            <p class="subtitle">免費線上行程表與排程系統 // 電競龐克風格整合版</p>
-        </header>
-
-        <main>
-            <div class="btn-group">
-                <a href="view.html" class="cyber-btn cyber-btn-primary">進入前台行程檢視 // VIEW</a>
-                <a href="edit.html" class="cyber-btn">進入後台控制面板 // EDIT</a>
-            </div>
-
-            <section class="cyber-card">
-                <h2>系統核心特色 // FEATURES</h2>
-                <div class="feature-grid">
-                    <div class="feature-item">
-                        <h3>⚡ 永久免費與資料安全</h3>
-                        <p>免花錢租用伺服器與網域，資料直接整合儲存至您個人專屬的 Google 試算表，安全且透明。</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>🔄 智慧週期批量生成</h3>
-                        <p>支援每日、每週特定日與指定天數間隔的行程自動產生，輸入「[第幾天]」巨集即可自動計算天數。</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>🎯 動態排序與即時微調</h3>
-                        <p>前台支援未完成事項優先排序與當日高亮顯示；後台支援直接點擊表格進行微調與自動重排。</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="cyber-card">
-                <h2>快速使用指南 // QUICK START</h2>
-                <ol style="padding-left: 20px; color: var(--text-muted);">
-                    <li style="margin-bottom: 10px;"><strong style="color: #fff;">連接資料庫：</strong>建立 Google Apps Script 後端部署，並將 API 網址填入系統設定。</li>
-                    <li style="margin-bottom: 10px;"><strong style="color: #fff;">批量建置行程：</strong>利用後台的週期生成面板，一鍵派發整週或整個月的預定任務。</li>
-                    <li style="margin-bottom: 10px;"><strong style="color: #fff;">實時動態檢視：</strong>透過前台網頁隨時查看每日最新待辦事項與最新進度。</li>
-                </ol>
-            </section>
-        </main>
-
-        <footer>
-            <p>© 2026 Schedule Hub System. Built with HTML5, GAS & Google Sheets. Hosted on Netlify.</p>
-        </footer>
+    <div class="card">
+        <h1>SCHEDULE HUB</h1>
+        <div class="sub-title">CENTRALIZED HUB</div>
+        
+        <div class="notice-box" id="typing-text"></div>
+        
+        <a href="edit.html" class="btn-admin">
+            <span>⚙️ 進入後台管理系統 ➔</span>
+        </a>
     </div>
 
+    <div class="seo-section">
+        <h2>🌟 為什麼選擇這款免費行程表工具？</h2>
+        <ul>
+            <li><span class="highlight">永久完全免費：</span> 秉持不讓學生花錢租網域與伺服器的初心，打造零維護成本、能永久免費跑下去的行程管理系統。</li>
+            <li><span class="highlight">免註冊帳號：</span> 拒絕隱私外洩！無需填寫 Email 或密碼，直接連動你專屬的 Google 試算表作為雲端資料庫。</li>
+            <li><span class="highlight">智慧週期生成：</span> 適合排功課表、定期行程。輸入起迄日期即可批量生成行程、自動計算天數，並由系統進行秒級排序。</li>
+        </ul>
+
+        <h2>🛠️ 3 步快速連動雲端試算表教學</h2>
+        <ol>
+            <li>建立一個新的 Google 試算表，並在 <span class="highlight">A1 儲存格</span> 輸入你想設定的密碼。</li>
+            <li>點擊右上角「共用」，將一般存取權改為 <span class="highlight">「知道連結的任何人」</span>，並切換權限為 <span class="highlight">「編輯者」</span>。</li>
+            <li>點選上方按鈕進入管理後台，貼上試算表網址、輸入 A1 密碼即可開始使用！</li>
+        </ol>
+
+        <h2>💡 熱血開發故事（我們的初心）</h2>
+        <p class="story-text">
+            「市面上排行程的工具一堆，但很多都要收費、塞滿廣告，或是強制你綁定會員。身為學生，我們有時候只是想弄個極簡的自主旅行規劃，或者追蹤專案行程，為什麼非得去租借昂貴的網域或伺服器？」
+        </p>
+        <p>
+            正因如此，我們用黑科技直接拿 Google 試算表當成免費資料庫。這個專案的核心靈魂就是：<span class="highlight">用最聰明的代碼，做最純粹、最不用花錢的優質工具。</span>
+        </p>
+    </div>
+
+    <script>
+        const text = "💡 系統提示：本網頁為後台管理專用入口。請點選下方按鈕進入管理介面，輸入專屬密碼後即可編輯並同步雲端行程。";
+        let index = 0;
+        const speed = 40;
+
+        function typeWriter() {
+            if (index < text.length) {
+                if (text.charAt(index) === "：") {
+                    document.getElementById("typing-text").innerHTML += "：<br>";
+                } else {
+                    document.getElementById("typing-text").innerHTML += text.charAt(index);
+                }
+                index++;
+                setTimeout(typeWriter, speed);
+            } else {
+                document.getElementById("typing-text").innerHTML += '<span class="cursor">|</span>';
+            }
+        }
+        window.onload = typeWriter;
+
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        const mouse = { x: null, y: null, maxDistance: 240 };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+
+        const textSymbols = ['12:00', '08:30', '23:59', '[||||||..]', '[|||.....]', 'SCHEDULE', 'TIME_AXIS'];
+        const particlesArray = [];
+        const numberOfParticles = 45;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 4 + 11; 
+                this.speedX = (Math.random() - 0.5) * 0.4; 
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.2 + 0.4; 
+                this.angle = Math.random() * Math.PI * 2; 
+                this.rotationSpeed = Math.random() * 0.004 + 0.002;
+
+                const rand = Math.random();
+                if (rand < 0.25) this.type = 'clock';
+                else if (rand < 0.5) this.type = 'dot';
+                else { this.type = 'text'; this.symbol = textSymbols[Math.floor(Math.random() * textSymbols.length)]; }
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY; this.angle += this.rotationSpeed;
+                if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+                if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
+                if (mouse.x !== null && mouse.y !== null) {
+                    let dx = mouse.x - this.x; let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.maxDistance) { this.x += dx * 0.015; this.y += dy * 0.015; }
+                }
+            }
+            draw() {
+                ctx.shadowBlur = 4; ctx.shadowColor = '#00f5d4';
+                if (this.type === 'clock') { 
+                    ctx.strokeStyle = `rgba(148, 163, 184, ${this.opacity})`; ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.arc(this.x, this.y, 12, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + Math.cos(this.angle) * 5, this.y + Math.sin(this.angle) * 5); ctx.stroke();
+                } else if (this.type === 'dot') {
+                    ctx.fillStyle = `rgba(0, 245, 212, ${this.opacity * 1.2})`;
+                    ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI * 2); ctx.fill();
+                } else if (this.type === 'text') {
+                    ctx.fillStyle = `rgba(148, 163, 184, ${this.opacity})`;
+                    ctx.font = `bold ${this.size}px monospace`; ctx.fillText(this.symbol, this.x, this.y);
+                }
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function init() { for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); }
+        function connectNodes() {
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let dx = particlesArray[a].x - particlesArray[b].x;
+                    let dy = particlesArray[a].y - particlesArray[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 140) {
+                        ctx.strokeStyle = `rgba(0, 245, 212, ${0.15 * (1 - distance / 140)})`; ctx.lineWidth = 1;
+                        ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
+                    }
+                }
+                if (mouse.x !== null && mouse.y !== null) {
+                    let dxM = particlesArray[a].x - mouse.x; let dyM = particlesArray[a].y - mouse.y;
+                    let distM = Math.sqrt(dxM * dxM + dyM * dyM);
+                    if (distM < mouse.maxDistance) {
+                        ctx.strokeStyle = `rgba(255, 0, 85, ${0.35 * (1 - distM / mouse.maxDistance)})`; ctx.lineWidth = 1.5;
+                        ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+                    }
+                }
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
+            connectNodes(); requestAnimationFrame(animate);
+        }
+        init(); animate();
+    </script>
 </body>
 </html>

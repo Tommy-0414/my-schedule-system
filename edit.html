@@ -11,14 +11,14 @@
 
     <style>
         :root {
-            --bg-primary: #0a0c10;
-            --bg-card: rgba(18, 22, 31, 0.95);
+            --bg-primary: #07090e;
+            --bg-card: rgba(13, 17, 26, 0.96);
             --neon-blue: #00f5d4;
             --neon-purple: #7b2cbf;
             --rog-red: #ff0055;
             --text-main: #f0f6fc;
             --text-muted: #8b949e;
-            --border-line: rgba(0, 245, 212, 0.3);
+            --border-line: rgba(0, 245, 212, 0.35);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,12 +31,12 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            padding: 40px 20px;
+            padding: 30px 15px;
             overflow-x: hidden;
             position: relative;
         }
 
-        body.emp-flash { background-color: rgba(0, 245, 212, 0.15) !important; }
+        body.emp-flash { background-color: rgba(0, 245, 212, 0.2) !important; }
 
         .rog-top-bar {
             height: 4px; width: 100%; position: fixed; top: 0; left: 0; z-index: 100;
@@ -45,29 +45,30 @@
             animation: rogStream 5s linear infinite, rogBreathing 3s ease-in-out infinite alternate;
         }
         @keyframes rogStream { 0% { background-position: 0% 0%; } 100% { background-position: 300% 0%; } }
-        @keyframes rogBreathing { 0% { box-shadow: 0 0 8px rgba(0, 245, 212, 0.4); } 100% { box-shadow: 0 0 22px rgba(255, 0, 85, 0.8); } }
+        @keyframes rogBreathing { 0% { box-shadow: 0 0 8px rgba(0, 245, 212, 0.4); } 100% { box-shadow: 0 0 25px rgba(255, 0, 85, 0.8); } }
 
         #space-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; 
         }
 
+        /* 擴大面板並增強 ROG 剪角與科技光暈 */
         .card { 
             background: var(--bg-card); 
             backdrop-filter: blur(25px);
-            padding: 35px; 
-            max-width: 650px; 
+            padding: 40px; 
+            max-width: 800px; 
             width: 100%;
             z-index: 10;
             position: relative;
             border: 1px solid var(--border-line);
-            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+            box-shadow: 0 30px 70px rgba(0,0,0,0.85), inset 0 0 20px rgba(0, 245, 212, 0.03);
             transition: all 0.3s ease;
         }
 
         .card.emp-glow {
             border-color: var(--neon-blue) !important;
-            box-shadow: 0 0 50px rgba(0, 245, 212, 0.6), 0 25px 60px rgba(0,0,0,0.9) !important;
+            box-shadow: 0 0 60px rgba(0, 245, 212, 0.6), 0 30px 70px rgba(0,0,0,0.95) !important;
             transform: scale(1.01);
         }
 
@@ -75,93 +76,93 @@
             font-family: 'Orbitron', sans-serif;
             color: #ffffff; 
             margin-top: 0;
-            margin-bottom: 20px; 
-            font-size: 1.6rem; 
+            margin-bottom: 22px; 
+            font-size: 1.8rem; 
             text-align: center;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 245, 212, 0.3);
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px rgba(0, 245, 212, 0.4);
         }
         
-        .info-container { margin-bottom: 25px; font-size: 0.88rem; line-height: 1.6; }
+        .info-container { margin-bottom: 25px; font-size: 0.9rem; line-height: 1.7; }
 
         .instruction-box {
-            background: rgba(0, 245, 212, 0.05);
+            background: rgba(0, 245, 212, 0.06);
             color: var(--text-main);
-            padding: 14px;
-            border-left: 3px solid var(--neon-blue);
-            margin-bottom: 12px;
+            padding: 16px;
+            border-left: 4px solid var(--neon-blue);
+            margin-bottom: 14px;
         }
 
         .warning-box {
-            background: rgba(255, 0, 85, 0.06);
+            background: rgba(255, 0, 85, 0.08);
             color: #fca5a5;
-            padding: 14px;
-            border-left: 3px solid var(--rog-red);
+            padding: 16px;
+            border-left: 4px solid var(--rog-red);
             animation: alarmPulse 2s infinite alternate;
         }
-        .warning-title { color: var(--rog-red); font-weight: bold; margin-bottom: 5px; font-family: 'Orbitron', sans-serif; }
+        .warning-title { color: var(--rog-red); font-weight: bold; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; }
 
         @keyframes alarmPulse {
-            0% { box-shadow: 0 0 4px rgba(255, 0, 85, 0.2); }
-            100% { box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); }
+            0% { box-shadow: 0 0 6px rgba(255, 0, 85, 0.2); }
+            100% { box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
         }
 
-        /* 🔒 修正密碼輸入框與按鈕重疊問題 */
+        /* 🔒 完美解決重疊：使用 Flex 獨立排列輸入框與按鈕 */
         .password-row { 
-            position: relative; 
-            margin-top: 15px; 
-            margin-bottom: 20px; 
             display: flex; 
+            gap: 10px; 
+            margin-top: 15px; 
+            margin-bottom: 22px; 
             align-items: center; 
         }
 
         input[type="text"], input[type="password"], input[type="date"], input[type="number"], select {
             width: 100%;
-            padding: 15px 18px;
-            background: rgba(10, 12, 16, 0.9);
+            padding: 16px 20px;
+            background: #05070b;
             border: 1px solid var(--border-line);
             border-radius: 0;
             color: #ffffff !important;
-            font-size: 0.95rem;
-            font-family: monospace;
+            font-size: 1rem;
+            font-family: 'Noto Sans TC', monospace;
             outline: none;
             transition: all 0.3s ease;
         }
 
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) drop-shadow(0 0 2px var(--neon-blue)); cursor: pointer; }
 
+        /* 高對比螢光青色提示字，確保看得超清楚 */
         input::placeholder, select::placeholder {
-            color: var(--text-muted) !important;
-            opacity: 0.8;
+            color: var(--neon-blue) !important;
+            opacity: 0.85;
+            text-shadow: 0 0 5px rgba(0, 245, 212, 0.3);
         }
 
         input:focus, select:focus {
             border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 245, 212, 0.4);
-            background: #0a0c10;
+            box-shadow: 0 0 18px rgba(0, 245, 212, 0.5);
+            background: #0a0e17;
         }
 
-        /* 確保密碼框右側有足夠空間給顯示按鈕 */
-        #password { padding-right: 90px !important; }
-
         .btn-toggle {
-            position: absolute; right: 8px;
             background: rgba(0, 245, 212, 0.12);
             border: 1px solid var(--neon-blue);
             color: var(--neon-blue);
-            padding: 8px 14px;
+            padding: 0 22px;
+            height: 52px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            white-space: nowrap;
             transition: all 0.2s;
-            z-index: 5;
         }
-        .btn-toggle:hover { background: var(--neon-blue); color: var(--bg-primary); }
+        .btn-toggle:hover { background: var(--neon-blue); color: var(--bg-primary); box-shadow: 0 0 15px var(--neon-blue); }
 
         button {
-            padding: 15px; color: var(--bg-primary); border: none;
+            padding: 16px; color: var(--bg-primary); border: none;
             font-family: 'Orbitron', 'Noto Sans TC', sans-serif; font-weight: 800;
-            font-size: 1rem; cursor: pointer; transition: all 0.3s ease;
+            font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease;
             letter-spacing: 1px; width: 100%;
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
         }
@@ -170,10 +171,10 @@
         .btn-load {
             background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
             color: var(--bg-primary);
-            box-shadow: 0 0 15px rgba(0, 245, 212, 0.4);
+            box-shadow: 0 0 20px rgba(0, 245, 212, 0.4);
             margin-top: 10px;
         }
-        .btn-load:hover { box-shadow: 0 0 25px var(--neon-blue); background: linear-gradient(135deg, #fff, var(--neon-blue)); }
+        .btn-load:hover { box-shadow: 0 0 30px var(--neon-blue); background: linear-gradient(135deg, #fff, var(--neon-blue)); }
 
         .btn-share {
             background: rgba(255, 255, 255, 0.05);
@@ -181,69 +182,83 @@
             border: 1px solid var(--border-line);
             margin-top: 12px;
         }
-        .btn-share:hover { background: var(--neon-blue); color: var(--bg-primary); box-shadow: 0 0 15px var(--neon-blue); }
+        .btn-share:hover { background: var(--neon-blue); color: var(--bg-primary); box-shadow: 0 0 20px var(--neon-blue); }
 
         .btn-share.success {
             background: #10b981 !important; color: #fff !important;
             border-color: #00f5d4 !important;
-            box-shadow: 0 0 30px rgba(0, 245, 212, 0.8) !important;
+            box-shadow: 0 0 35px rgba(0, 245, 212, 0.9) !important;
         }
 
-        #editor-ui hr { border: 0; border-top: 1px solid var(--border-line); margin: 30px 0; }
+        #editor-ui hr { border: 0; border-top: 1px solid var(--border-line); margin: 35px 0; }
         
         .title-input {
-            font-size: 1.15rem !important; font-weight: bold; color: #ffffff !important; text-align: center;
-            background: rgba(0, 245, 212, 0.04) !important; border: 1px dashed var(--neon-blue) !important;
-            margin-bottom: 20px;
+            font-size: 1.2rem !important; font-weight: bold; color: #ffffff !important; text-align: center;
+            background: rgba(0, 245, 212, 0.05) !important; border: 2px dashed var(--neon-blue) !important;
+            margin-bottom: 25px;
         }
 
-        .input-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-add { width: 100px !important; background: var(--neon-purple); color: #fff; box-shadow: 0 0 10px rgba(123, 44, 191, 0.4); margin: 0; }
-        .btn-add:hover { background: var(--neon-blue); color: var(--bg-primary); box-shadow: 0 0 15px var(--neon-blue); }
+        .input-group { display: flex; gap: 12px; margin-top: 15px; }
+        .btn-add { width: 120px !important; background: var(--neon-purple); color: #fff; box-shadow: 0 0 12px rgba(123, 44, 191, 0.5); margin: 0; }
+        .btn-add:hover { background: var(--neon-blue); color: var(--bg-primary); box-shadow: 0 0 20px var(--neon-blue); }
         
         .hint-text {
-            font-size: 0.82em; color: var(--neon-blue); margin-top: 8px; display: block;
-            background: rgba(0, 245, 212, 0.04); padding: 10px; border-left: 3px solid var(--neon-blue); line-height: 1.4;
+            font-size: 0.85em; color: var(--neon-blue); margin-top: 10px; display: block;
+            background: rgba(0, 245, 212, 0.05); padding: 12px; border-left: 3px solid var(--neon-blue); line-height: 1.5;
         }
 
         .batch-panel {
-            background: rgba(10, 12, 16, 0.8);
+            background: rgba(5, 7, 11, 0.9);
             border: 1px solid var(--border-line);
-            padding: 20px; margin-top: 25px;
+            padding: 25px; margin-top: 30px;
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
         }
-        .batch-panel h4 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-top: 0; margin-bottom: 15px; font-size: 1.1rem; }
-        .batch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .weekday-checkboxes { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-line); }
-        .weekday-checkboxes label { color: #cbd5e1; font-size: 0.9rem; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        .batch-panel h4 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-top: 0; margin-bottom: 18px; font-size: 1.2rem; }
+        .batch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .weekday-checkboxes { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; padding: 12px; background: rgba(0,0,0,0.6); border: 1px solid var(--border-line); }
+        .weekday-checkboxes label { color: #cbd5e1; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
         
         .btn-batch-run {
             background: linear-gradient(135deg, var(--neon-purple), var(--rog-red));
-            color: #fff; box-shadow: 0 0 15px rgba(255, 0, 85, 0.4); margin-top: 10px;
+            color: #fff; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); margin-top: 15px;
         }
-        .btn-batch-run:hover { box-shadow: 0 0 25px var(--rog-red); }
+        .btn-batch-run:hover { box-shadow: 0 0 30px var(--rog-red); }
 
-        .batch-hint { font-size: 0.8rem; color: var(--neon-blue); opacity: 0.9; margin-top: 6px; display: block; line-height: 1.4; }
+        .batch-hint { font-size: 0.85rem; color: var(--neon-blue); opacity: 0.9; margin-top: 8px; display: block; line-height: 1.5; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 25px; color: #cbd5e1; }
-        th { padding: 12px; border-bottom: 2px solid var(--border-line); text-align: left; color: #ffffff; font-weight: 600; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; }
-        td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
-        tr:hover { background: rgba(0, 245, 212, 0.03); }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; color: #cbd5e1; }
+        th { padding: 14px; border-bottom: 2px solid var(--border-line); text-align: left; color: #ffffff; font-weight: 600; font-family: 'Orbitron', sans-serif; font-size: 0.95rem; }
+        td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
+        tr:hover { background: rgba(0, 245, 212, 0.04); }
 
         .cell-editable {
-            background: rgba(0,0,0,0.6) !important; border: 1px solid var(--border-line) !important;
-            padding: 8px 10px !important; color: #ffffff !important; width: 100% !important; font-size: 0.95rem;
+            background: rgba(0,0,0,0.7) !important; border: 1px solid var(--border-line) !important;
+            padding: 10px 12px !important; color: #ffffff !important; width: 100% !important; font-size: 1rem;
         }
-        .cell-editable:focus { border-color: var(--neon-blue) !important; box-shadow: 0 0 8px rgba(0, 245, 212, 0.4) !important; }
+        .cell-editable:focus { border-color: var(--neon-blue) !important; box-shadow: 0 0 10px rgba(0, 245, 212, 0.5) !important; }
 
-        .delete-action { color: var(--rog-red); cursor: pointer; font-weight: bold; transition: all 0.2s; display: block; padding: 8px 0; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; }
-        .delete-action:hover { text-shadow: 0 0 8px var(--rog-red); }
+        .delete-action { color: var(--rog-red); cursor: pointer; font-weight: bold; transition: all 0.2s; display: block; padding: 8px 0; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; text-align: center; }
+        .delete-action:hover { text-shadow: 0 0 10px var(--rog-red); }
 
         .btn-save {
             background: linear-gradient(135deg, #10b981, var(--neon-blue));
-            color: var(--bg-primary); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-            margin-top: 25px; font-size: 1.1rem;
+            color: var(--bg-primary); box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+            margin-top: 30px; font-size: 1.2rem;
         }
-        .btn-save:hover { box-shadow: 0 0 30px var(--neon-blue); background: linear-gradient(135deg, #fff, #10b981); }
+        .btn-save:hover { box-shadow: 0 0 35px var(--neon-blue); background: linear-gradient(135deg, #fff, #10b981); }
+
+        /* 📱 手機響應式 RWD 適應 */
+        @media (max-width: 768px) {
+            .card { padding: 20px; clip-path: none; border-radius: 12px; }
+            .batch-grid, .input-group { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+            .btn-add { width: 100% !important; }
+            h2 { font-size: 1.4rem; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { margin-bottom: 15px; border: 1px solid var(--border-line); padding: 10px; background: rgba(0,0,0,0.4); }
+            td { padding: 8px 0; border: none; display: flex; justify-content: space-between; align-items: center; }
+            td::before { content: attr(data-label); font-family: 'Orbitron'; color: var(--neon-blue); font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -267,8 +282,10 @@
         </div>
 
         <input type="text" id="sheetId" placeholder="請輸入試算表 ID 或完整網址">
+        
+        <!-- 🔒 修正後的密碼與顯示按鈕群組（絕對不會重疊） -->
         <div class="password-row">
-            <input type="password" id="password" placeholder="請輸入密碼">
+            <input type="password" id="password" placeholder="請輸入密碼" style="flex: 1;">
             <button type="button" class="btn-toggle" onclick="togglePassword()">顯示</button>
         </div>
 
@@ -291,18 +308,18 @@
                 <h4>⚡ 智能週期批量生成行程</h4>
                 <div class="batch-grid">
                     <div>
-                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:4px;">開始日期</label>
+                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:6px;">開始日期</label>
                         <input type="date" id="batchStart">
                     </div>
                     <div>
-                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:4px;">結束日期</label>
+                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:6px;">結束日期</label>
                         <input type="date" id="batchEnd">
                     </div>
                 </div>
 
                 <div class="batch-grid">
                     <div>
-                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:4px;">生成模式</label>
+                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:6px;">生成模式</label>
                         <select id="batchType" onchange="toggleBatchSubOptions()">
                             <option value="daily">每天生成</option>
                             <option value="weekly">每週特定天</option>
@@ -310,7 +327,7 @@
                         </select>
                     </div>
                     <div id="interval-days-wrapper" style="display:none;">
-                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:4px;">每隔幾天</label>
+                        <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:6px;">每隔幾天</label>
                         <input type="number" id="batchInterval" value="2" min="1">
                     </div>
                 </div>
@@ -338,10 +355,10 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 30%;">日期</th>
-                        <th style="width: 45%;">行程內容</th>
+                        <th style="width: 28%;">日期</th>
+                        <th style="width: 47%;">行程內容</th>
                         <th style="width: 12%; text-align: center;">完成</th>
-                        <th style="width: 13%;">操作</th>
+                        <th style="width: 13%; text-align: center;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -425,10 +442,10 @@
                     let isChecked = (row[2] === true || row[2] === "true" || row[2] === "TRUE") ? "checked" : "";
                     
                     tbody.innerHTML += `<tr>
-                        <td><input type="text" class="cell-editable cell-date" value="${displayDate}"></td>
-                        <td><input type="text" class="cell-editable cell-event" value="${row[1]||''}"></td>
-                        <td style="text-align: center;"><input type="checkbox" style="width:20px; height:20px; cursor:pointer; accent-color:var(--neon-blue);" ${isChecked}></td>
-                        <td><span class="delete-action" onclick="this.parentElement.parentElement.remove(); sortTableRows();">[✕ 移除]</span></td>
+                        <td data-label="日期"><input type="text" class="cell-editable cell-date" value="${displayDate}"></td>
+                        <td data-label="行程內容"><input type="text" class="cell-editable cell-event" value="${row[1]||''}"></td>
+                        <td data-label="完成" style="text-align: center;"><input type="checkbox" style="width:22px; height:22px; cursor:pointer; accent-color:var(--neon-blue);" ${isChecked}></td>
+                        <td data-label="操作" style="text-align: center;"><span class="delete-action" onclick="this.closest('tr').remove(); sortTableRows();">[✕ 移除]</span></td>
                     </tr>`;
                 });
                 sortTableRows();
@@ -443,10 +460,10 @@
             
             const tbody = document.getElementById('table-body');
             tbody.innerHTML += `<tr>
-                <td><input type="text" class="cell-editable cell-date" value="${date}"></td>
-                <td><input type="text" class="cell-editable cell-event" value="${event}"></td>
-                <td style="text-align: center;"><input type="checkbox" style="width:20px; height:20px; cursor:pointer; accent-color:var(--neon-blue);"></td>
-                <td><span class="delete-action" onclick="this.parentElement.parentElement.remove(); sortTableRows();">[✕ 移除]</span></td>
+                <td data-label="日期"><input type="text" class="cell-editable cell-date" value="${date}"></td>
+                <td data-label="行程內容"><input type="text" class="cell-editable cell-event" value="${event}"></td>
+                <td data-label="完成" style="text-align: center;"><input type="checkbox" style="width:22px; height:22px; cursor:pointer; accent-color:var(--neon-blue);"></td>
+                <td data-label="操作" style="text-align: center;"><span class="delete-action" onclick="this.closest('tr').remove(); sortTableRows();">[✕ 移除]</span></td>
             </tr>`;
             document.getElementById('newDate').value = ''; document.getElementById('newEvent').value = '';
             sortTableRows();
@@ -492,10 +509,10 @@
                     const dateString = currentDate.toISOString().substring(0, 10);
                     const finalEventName = eventTemplate.replace(/\[第幾天\]/g, matchCount);
                     tbody.innerHTML += `<tr>
-                        <td><input type="text" class="cell-editable cell-date" value="${dateString}"></td>
-                        <td><input type="text" class="cell-editable cell-event" value="${finalEventName}"></td>
-                        <td style="text-align: center;"><input type="checkbox" style="width:20px; height:20px; cursor:pointer; accent-color:var(--neon-blue);"></td>
-                        <td><span class="delete-action" onclick="this.parentElement.parentElement.remove(); sortTableRows();">[✕ 移除]</span></td>
+                        <td data-label="日期"><input type="text" class="cell-editable cell-date" value="${dateString}"></td>
+                        <td data-label="行程內容"><input type="text" class="cell-editable cell-event" value="${finalEventName}"></td>
+                        <td data-label="完成" style="text-align: center;"><input type="checkbox" style="width:22px; height:22px; cursor:pointer; accent-color:var(--neon-blue);"></td>
+                        <td data-label="操作" style="text-align: center;"><span class="delete-action" onclick="this.closest('tr').remove(); sortTableRows();">[✕ 移除]</span></td>
                     </tr>`;
                     addedCount++;
                 }
@@ -516,7 +533,7 @@
             document.querySelectorAll('#table-body tr').forEach(tr => {
                 const date = tr.querySelector('.cell-date').value;
                 const event = tr.querySelector('.cell-event').value;
-                const isCompleted = tr.cells[2].querySelector('input').checked;
+                const isCompleted = tr.querySelector('input[type="checkbox"]').checked;
                 data.push([date, event, isCompleted]);
             });
             

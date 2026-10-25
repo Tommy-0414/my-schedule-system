@@ -163,7 +163,6 @@
             <a href="view.html" class="cyber-link-btn">前往前台檢視 VIEW →</a>
         </div>
 
-        <!-- 試算表連線與分享代號卡片（完全恢復只輸入連結與密碼） -->
         <div class="cyber-card">
             <h3>🔑 試算表連線與分享代號機制</h3>
             <div class="tips-box">
@@ -197,7 +196,6 @@
             </div>
         </div>
 
-        <!-- 編輯與批量生成控制台 (連線後解鎖) -->
         <div id="editorPanel" style="display: none;">
             
             <div class="cyber-card">
@@ -271,6 +269,9 @@
     </div>
 
     <script>
+        // 設定共用的 Google Apps Script 後端代理網址
+        const SHARED_GAS_API = "https://script.google.com/macros/s/AKfycbw.../exec"; // <-- 我們共用的雲端代理
+
         const canvas = document.getElementById('bgCanvas');
         const ctx = canvas.getContext('2d');
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -307,19 +308,23 @@
             document.getElementById('weekdayGroup').style.display = (mode === 'weekly') ? 'block' : 'none';
         }
 
+        function extractSheetId(input) {
+            let sheetId = input.trim();
+            if (input.includes('/d/')) {
+                const match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                if (match) sheetId = match[1];
+            }
+            return sheetId;
+        }
+
         function generateShareCode() {
-            const sheet = document.getElementById('sheetUrl').value.trim();
+            const sheetInput = document.getElementById('sheetUrl').value.trim();
             const pass = document.getElementById('sheetPass').value.trim();
-            if (!sheet || !pass) {
+            if (!sheetInput || !pass) {
                 alert("請先填入試算表網址與密碼，才能生成分享代號！");
                 return;
             }
-            let sheetId = sheet;
-            if (sheet.includes('/d/')) {
-                const match = sheet.match(/\/d\/([a-zA-Z0-9-_]+)/);
-                if (match) sheetId = match[1];
-            }
-            // 只打包 Sheet ID 與密碼
+            const sheetId = extractSheetId(sheetInput);
             const rawData = sheetId + "|||" + pass;
             const code = btoa(encodeURIComponent(rawData));
             const link = window.location.origin + "/view.html?code=" + code;
@@ -333,66 +338,157 @@
         }
 
         function connectSheet() {
-            const url = document.getElementById('sheetUrl').value.trim();
+            const urlInput = document.getElementById('sheetUrl').value.trim();
             const pass = document.getElementById('sheetPass').value.trim();
-            if(!url || !pass) {
+            if(!urlInput || !pass) {
                 alert("請完整輸入試算表網址與密碼！");
                 return;
             }
-            localStorage.setItem('user_sheet_url', url);
+            const sheetId = extractSheetId(urlInput);
+            localStorage.setItem('user_sheet_id', sheetId);
             localStorage.setItem('user_sheet_pass', pass);
             
             document.getElementById('editorPanel').style.display = 'block';
-            alert("連線成功！後台控制台與互動打勾清單已解鎖。");
+            alert("連線成功！正在從您的 Google 試算表讀取資料...");
             loadExistingSchedules();
         }
 
+        // 真實從雲端試算表抓取資料
         async function loadExistingSchedules() {
             const listEl = document.getElementById('existingSchedulesList');
-            const sheetUrl = localStorage.getItem('user_sheet_url');
+            const sheetId = localStorage.getItem('user_sheet_id');
             const pass = localStorage.getItem('user_sheet_pass');
 
-            if (!sheetUrl) {
-                listEl.innerHTML = `<p style="color: var(--rog-red); text-align: center; padding: 15px;">尚未設定試算表網址</p>`;
+            if (!sheetId) return;
+
+            listEl.innerHTML = `<p style="color: var(--neon-blue); text-align: center; padding: 15px;">正在同步雲端試算表...</p>`;
+
+            try {
+                const response = await fetch(`https://script.google.com/macros/s/AKfycbw.../exec?sheetId=${sheetId}&pass=${pass}`);
+                const result = await response.json();
+                
+                if (result.status === 'error') {
+                    listEl.innerHTML = `<p style="color: var(--rog-red); text-align: center; padding: 15px;">錯誤：${result.message}（請確認密碼或共用權限為編輯者）</p>`;
+                    return;
+                }
+
+                const data = result.data || [];
+                listEl.innerHTML = '';
+
+                if (data.length === 0) {
+                    listEl.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 15px;">試算表中目前尚無行程資料。</p>`;
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'schedule-row';
+                    const isChecked = (item.done === true || item.done === 'true' || item.done === 'TRUE');
+                    
+                    row.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="checkbox" class="cyber-checkbox" ${isChecked ? 'checked' : ''} onchange="updateStatus(${index + 2}, this.checked)">
+                            <div>
+                                <span style="color: var(--neon-blue); font-family: 'Orbitron';">${item.date}</span> - <strong>${escapeHtml(item.title)}</strong>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">[C欄: ${isChecked ? 'TRUE' : 'FALSE'}]</span>
+                    `;
+                    listEl.appendChild(row);
+                });
+            } catch (err) {
+                console.error(err);
+                listEl.innerHTML = `<p style="color: var(--rog-red); text-align: center; padding: 15px;">無法連線至後端伺服器，請確認共用權限已設為「知道連結的任何人可編輯」！</p>`;
+            }
+        }
+
+        // 真實更新 C 欄勾選狀態
+        async function updateStatus(rowIndex, isChecked) {
+            const sheetId = localStorage.getItem('user_sheet_id');
+            const pass = localStorage.getItem('user_sheet_pass');
+            try {
+                await fetch(`https://script.google.com/macros/s/AKfycbw.../exec`, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'updateStatus', sheetId, pass, row: rowIndex, done: isChecked })
+                });
+                loadExistingSchedules();
+            } catch (e) {
+                alert("狀態更新至試算表失敗！");
+            }
+        }
+
+        // 真實新增單筆行程至試算表
+        async function addSingle() {
+            const sheetId = localStorage.getItem('user_sheet_id');
+            const pass = localStorage.getItem('user_sheet_pass');
+            const date = document.getElementById('singleDate').value;
+            const content = document.getElementById('singleContent').value.trim();
+
+            if (!date || !content) {
+                alert("請完整填寫日期與行程內容！");
                 return;
             }
 
-            // 這裡模擬從你的試算表抓回來的資料（略過第1行，A欄日期、B欄內容、C欄狀態）
-            const demoSchedules = [
-                { date: "2026-09-30", title: "認真讀書", done: true }
-            ];
-
-            listEl.innerHTML = '';
-            demoSchedules.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = 'schedule-row';
-                const isChecked = (item.done === true || item.done === 'true' || item.done === 'TRUE');
-                
-                row.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <input type="checkbox" class="cyber-checkbox" ${isChecked ? 'checked' : ''} onchange="updateStatus(${index + 2}, this.checked)">
-                        <div>
-                            <span style="color: var(--neon-blue); font-family: 'Orbitron';">${item.date}</span> - <strong>${escapeHtml(item.title)}</strong>
-                        </div>
-                    </div>
-                    <span style="color: var(--text-muted); font-size: 0.85rem;">[C欄狀態: ${isChecked ? 'TRUE' : 'FALSE'}]</span>
-                `;
-                listEl.appendChild(row);
-            });
-        }
-
-        async function updateStatus(rowIndex, isChecked) {
             try {
-                // 模擬更新 C 欄狀態
-                console.log(`Row ${rowIndex} C column updated to: ${isChecked}`);
-                loadExistingSchedules();
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbw.../exec`, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'addSingle', sheetId, pass, date, content })
+                });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    alert("單筆行程已成功寫入 Google 試算表！");
+                    document.getElementById('singleContent').value = '';
+                    loadExistingSchedules();
+                } else {
+                    alert("寫入失敗：" + result.message);
+                }
             } catch (e) {
-                alert("狀態更新失敗！");
+                alert("網路連線或寫入失敗！");
             }
         }
 
-        function addSingle() { alert("單筆行程已成功寫入試算表！"); loadExistingSchedules(); }
-        function runBatch() { alert("週期批量行程已成功生成寫入！"); loadExistingSchedules(); }
+        // 真實執行批量生成並寫入試算表
+        async function runBatch() {
+            const sheetId = localStorage.getItem('user_sheet_id');
+            const pass = localStorage.getItem('user_sheet_pass');
+            const start = document.getElementById('batchStart').value;
+            const end = document.getElementById('batchEnd').value;
+            const template = document.getElementById('batchTemplate').value.trim();
+            const mode = document.getElementById('batchMode').value;
+            const interval = parseInt(document.getElementById('batchInterval').value) || 1;
+
+            if (!start || !end || !template) {
+                alert("請完整填寫開始日期、結束日期與行程模板！");
+                return;
+            }
+
+            // 收集勾選的星期
+            const weekdays = [];
+            if (mode === 'weekly') {
+                document.querySelectorAll('input[name="weekday"]:checked').forEach(cb => weekdays.push(parseInt(cb.value)));
+                if (weekdays.length === 0) {
+                    alert("請至少選擇一個星期！");
+                    return;
+                }
+            }
+
+            try {
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbw.../exec`, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'batchAdd', sheetId, pass, start, end, template, mode, interval, weekdays })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert(`成功批量生成 ${result.count} 筆行程並寫入試算表！`);
+                    loadExistingSchedules();
+                } else {
+                    alert("批量生成失敗：" + result.message);
+                }
+            } catch (e) {
+                alert("批量生成連線失敗！");
+            }
+        }
+
         function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
     </script>
 </body>

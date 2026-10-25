@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>行程檢視儀表板 // Schedule Hub View</title>
+    <title>安全防護行程儀表板 // Schedule Hub View</title>
     
-    <!-- 科幻字體 Orbitron 與 Noto Sans TC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
@@ -39,7 +38,6 @@
             padding-bottom: 50px;
         }
 
-        /* Canvas 背景置底 */
         #bgCanvas {
             position: fixed;
             top: 0;
@@ -50,7 +48,6 @@
             pointer-events: none;
         }
 
-        /* ROG G16 頂部動態 Aura 呼吸光條 */
         .rog-top-bar {
             height: 4px;
             width: 100%;
@@ -73,6 +70,93 @@
             100% { box-shadow: 0 0 22px rgba(255, 0, 85, 0.8); }
         }
 
+        /* --- 密碼鎖防護罩樣式 --- */
+        #authOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 12, 16, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-box {
+            background: var(--bg-card);
+            border: 1px solid var(--neon-blue);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+            box-shadow: 0 0 30px rgba(0, 245, 212, 0.2);
+        }
+
+        .auth-box h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .auth-box p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-line);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .auth-input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 245, 212, 0.3);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: var(--bg-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .auth-error {
+            color: var(--rog-red);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            min-height: 20px;
+        }
+
+        /* --- 主畫面樣式 --- */
         .main-wrapper {
             position: relative;
             z-index: 10;
@@ -123,7 +207,6 @@
             100% { transform: scale(0.95); opacity: 0.7; }
         }
 
-        /* 電競龐克機甲卡片 */
         .schedule-card {
             background: var(--bg-card);
             border: 1px solid var(--border-line);
@@ -131,14 +214,7 @@
             margin-bottom: 18px;
             position: relative;
             backdrop-filter: blur(10px);
-            clip-path: polygon(
-                0 0, 
-                calc(100% - 16px) 0, 
-                100% 16px, 
-                100% 100%, 
-                16px 100%, 
-                0 calc(100% - 16px)
-            );
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
             transition: all 0.3s ease;
         }
 
@@ -148,7 +224,6 @@
             box-shadow: -4px 0 20px rgba(0, 245, 212, 0.2);
         }
 
-        /* 當日任務的高亮脈衝光暈 */
         .schedule-card.is-today {
             border-color: var(--neon-blue);
             background: rgba(0, 245, 212, 0.06);
@@ -170,7 +245,6 @@
             box-shadow: 0 0 10px var(--neon-blue);
         }
 
-        /* 已完成項目的淡化處理 */
         .schedule-card.is-done {
             opacity: 0.45;
             filter: grayscale(0.6);
@@ -206,7 +280,6 @@
             line-height: 1.5;
         }
 
-        /* 導航按鈕列 */
         .nav-bar {
             display: flex;
             justify-content: space-between;
@@ -243,10 +316,18 @@
 </head>
 <body>
 
-    <!-- ROG 脈衝光邊條 -->
-    <div class="rog-top-bar"></div>
+    <!-- 密碼鎖防護罩 -->
+    <div id="authOverlay">
+        <div class="auth-box">
+            <h2>RESTRICTED AREA</h2>
+            <p>請輸入安全存取密碼以解鎖行程資料庫</p>
+            <input type="password" id="passInput" class="auth-input" placeholder="••••">
+            <button class="auth-btn" onclick="verifyPassword()">UNLOCK ACCESS</button>
+            <div id="authError" class="auth-error"></div>
+        </div>
+    </div>
 
-    <!-- 背景 Canvas 粒子 -->
+    <div class="rog-top-bar"></div>
     <canvas id="bgCanvas"></canvas>
 
     <div class="main-wrapper">
@@ -254,7 +335,7 @@
             <div class="sys-title">SCHEDULE DASHBOARD</div>
             <div class="status-bar">
                 <div class="pulse-dot"></div>
-                <span>SYSTEM ONLINE // REAL-TIME MONITORING</span>
+                <span>SYSTEM SECURED // ENCRYPTED LINK</span>
             </div>
         </header>
 
@@ -265,13 +346,48 @@
 
         <div id="scheduleContainer">
             <div class="loading-state">
-                LOADING DATA STREAMS...
+                WAITING FOR AUTHENTICATION...
             </div>
         </div>
     </div>
 
     <script>
-        // --- 1. Canvas 輕量背景粒子動畫 ---
+        // ==========================================
+        // 🔐 設定你的專屬密碼與 Google API 網址
+        // ==========================================
+        const MY_SECURE_PASSWORD = "0414"; // <-- 你可以改成你自己的密碼！
+        const API_URL = "YOUR_GAS_API_URL_HERE"; // <-- 填入你另一個帳號的 GAS 部署網址
+
+        // 檢查是否已經解鎖過
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('isUnlocked') === 'true') {
+                document.getElementById('authOverlay').style.display = 'none';
+                fetchSchedules();
+            }
+        });
+
+        function verifyPassword() {
+            const inputVal = document.getElementById('passInput').value;
+            const errorDiv = document.getElementById('authError');
+
+            if (inputVal === MY_SECURE_PASSWORD) {
+                sessionStorage.setItem('isUnlocked', 'true');
+                document.getElementById('authOverlay').style.display = 'none';
+                fetchSchedules();
+            } else {
+                errorDiv.textContent = "ACCESS DENIED: 密碼錯誤，請重新輸入";
+                document.getElementById('passInput').value = '';
+            }
+        }
+
+        // 按 Enter 鍵直接解鎖
+        document.getElementById('passInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        });
+
+        // --- Canvas 背景粒子動畫 ---
         const canvas = document.getElementById('bgCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -283,9 +399,7 @@
         window.addEventListener('resize', resizeCanvas);
 
         const particles = [];
-        const particleCount = 35;
-
-        for (let i = 0; i < particleCount; i++) {
+        for (let i = 0; i < 35; i++) {
             particles.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
@@ -302,7 +416,6 @@
             particles.forEach(p => {
                 p.x += p.vx;
                 p.y += p.vy;
-
                 if (p.x < 0) p.x = canvas.width;
                 if (p.x > canvas.width) p.x = 0;
                 if (p.y < 0) p.y = canvas.height;
@@ -318,20 +431,13 @@
         }
         drawParticles();
 
-        // --- 2. 行程資料讀取與渲染邏輯 ---
-        // 請將此處替換為你實際的 Google Apps Script API 部署網址
-        const API_URL = "YOUR_GAS_API_URL_HERE"; 
-
+        // --- 行程資料讀取與渲染邏輯 ---
         async function fetchSchedules() {
             const container = document.getElementById('scheduleContainer');
             
             if (!API_URL || API_URL === "YOUR_GAS_API_URL_HERE") {
-                // 若未填寫 API 網址，顯示電競龐克 Demo 數據
                 renderData([
-                    { date: getTodayString(), title: "中興大學 AI 營隊說明會", desc: "線上會議：介紹專案展示與備審資料準備", done: false },
-                    { date: getOffsetDateString(1), title: "APCS 模擬測試與題庫刷題", desc: "完成 3 題觀念題與 2 題實作題練習", done: false },
-                    { date: getOffsetDateString(2), title: "特殊選才自傳與簡歷校對", desc: "整理獎狀與證照 PDF 檔上傳至 Google Drive", done: false },
-                    { date: getOffsetDateString(-1), title: "ESP32 溫濕度感測器測試", desc: "燒錄程式碼並確認 CSV 數據正常寫入", done: true }
+                    { date: getTodayString(), title: "（安全防護模式範例）請綁定您的 GAS API", desc: "當您填入真實 API 網址後將顯示您的專屬行程", done: false }
                 ]);
                 return;
             }
@@ -356,8 +462,6 @@
             }
 
             const todayStr = getTodayString();
-
-            // 排序邏輯：未完成優先 -> 依日期先後排序
             list.sort((a, b) => {
                 if (a.done !== b.done) return a.done ? 1 : -1;
                 return new Date(a.date) - new Date(b.date);
@@ -379,18 +483,8 @@
             });
         }
 
-        // 輔助函式
         function getTodayString() {
             const now = new Date();
-            const y = now.getFullYear();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        }
-
-        function getOffsetDateString(offsetDays) {
-            const now = new Date();
-            now.setDate(now.getDate() + offsetDays);
             const y = now.getFullYear();
             const m = String(now.getMonth() + 1).padStart(2, '0');
             const d = String(now.getDate()).padStart(2, '0');
@@ -401,9 +495,6 @@
             if (!str) return '';
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
-
-        // 初始化讀取
-        fetchSchedules();
     </script>
 </body>
 </html>

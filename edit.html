@@ -12,7 +12,7 @@
     <style>
         :root {
             --bg-primary: #0a0c10;
-            --bg-card: rgba(18, 22, 31, 0.94);
+            --bg-card: rgba(18, 22, 31, 0.95);
             --neon-blue: #00f5d4;
             --neon-purple: #7b2cbf;
             --rog-red: #ff0055;
@@ -106,12 +106,19 @@
             100% { box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); }
         }
 
-        .password-row { position: relative; margin-top: 15px; margin-bottom: 20px; display: flex; align-items: center; }
+        /* 🔒 修正密碼輸入框與按鈕重疊問題 */
+        .password-row { 
+            position: relative; 
+            margin-top: 15px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+        }
 
         input[type="text"], input[type="password"], input[type="date"], input[type="number"], select {
             width: 100%;
             padding: 15px 18px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(10, 12, 16, 0.9);
             border: 1px solid var(--border-line);
             border-radius: 0;
             color: #ffffff !important;
@@ -124,8 +131,7 @@
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
         input::placeholder, select::placeholder {
-            color: var(--neon-blue) !important;
-            text-shadow: 0 0 3px rgba(0, 245, 212, 0.4);
+            color: var(--text-muted) !important;
             opacity: 0.8;
         }
 
@@ -135,18 +141,20 @@
             background: #0a0c10;
         }
 
-        #password { padding-right: 75px; }
+        /* 確保密碼框右側有足夠空間給顯示按鈕 */
+        #password { padding-right: 90px !important; }
 
         .btn-toggle {
-            position: absolute; right: 10px;
-            background: rgba(0, 245, 212, 0.1);
+            position: absolute; right: 8px;
+            background: rgba(0, 245, 212, 0.12);
             border: 1px solid var(--neon-blue);
             color: var(--neon-blue);
-            padding: 6px 12px;
+            padding: 8px 14px;
             cursor: pointer;
             font-size: 0.8rem;
             font-family: 'Orbitron', sans-serif;
             transition: all 0.2s;
+            z-index: 5;
         }
         .btn-toggle:hover { background: var(--neon-blue); color: var(--bg-primary); }
 
@@ -199,13 +207,13 @@
         }
 
         .batch-panel {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(10, 12, 16, 0.8);
             border: 1px solid var(--border-line);
             padding: 20px; margin-top: 25px;
         }
         .batch-panel h4 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-top: 0; margin-bottom: 15px; font-size: 1.1rem; }
         .batch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .weekday-checkboxes { display: flex; flex-wrap: gap; gap: 10px; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-line); }
+        .weekday-checkboxes { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-line); }
         .weekday-checkboxes label { color: #cbd5e1; font-size: 0.9rem; display: flex; align-items: center; gap: 4px; cursor: pointer; }
         
         .btn-batch-run {
@@ -222,7 +230,7 @@
         tr:hover { background: rgba(0, 245, 212, 0.03); }
 
         .cell-editable {
-            background: rgba(0,0,0,0.5) !important; border: 1px solid var(--border-line) !important;
+            background: rgba(0,0,0,0.6) !important; border: 1px solid var(--border-line) !important;
             padding: 8px 10px !important; color: #ffffff !important; width: 100% !important; font-size: 0.95rem;
         }
         .cell-editable:focus { border-color: var(--neon-blue) !important; box-shadow: 0 0 8px rgba(0, 245, 212, 0.4) !important; }

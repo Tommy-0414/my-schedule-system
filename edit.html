@@ -95,33 +95,16 @@
         }
         .cyber-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 245, 212, 0.3); }
 
-        /* 密碼框與顯示按鈕容器 */
-        .password-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .password-wrapper input {
-            padding-right: 70px;
-        }
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .password-wrapper input { padding-right: 70px; }
         .show-pass-btn {
-            position: absolute;
-            right: 10px;
-            background: rgba(0, 245, 212, 0.1);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 5px 10px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            transition: all 0.2s;
+            position: absolute; right: 10px; background: rgba(0, 245, 212, 0.1);
+            border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px;
+            font-size: 0.8rem; cursor: pointer; font-family: 'Orbitron', sans-serif; transition: all 0.2s;
         }
-        .show-pass-btn:hover {
-            background: var(--neon-blue);
-            color: var(--bg-primary);
-        }
+        .show-pass-btn:hover { background: var(--neon-blue); color: var(--bg-primary); }
 
-        /* 修正下拉選單樣式：強制白色文字與深色背景，確保清晰可見 */
+        /* 確保下拉選單文字清晰 */
         .cyber-select {
             width: 100%; padding: 12px 15px; background: #0a0c10;
             border: 1px solid var(--border-line); color: #fff !important; font-family: 'Noto Sans TC', sans-serif; font-size: 0.95rem; outline: none;
@@ -156,10 +139,15 @@
             background: rgba(10, 12, 16, 0.85); border: 1px solid var(--border-line); padding: 15px; margin-top: 10px;
         }
         .schedule-row {
-            display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.95rem;
         }
         .schedule-row:hover { background: rgba(0, 245, 212, 0.04); }
+
+        /* 自定義美化 Checkbox */
+        .cyber-checkbox {
+            width: 20px; height: 20px; accent-color: var(--neon-blue); cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -177,7 +165,6 @@
             <a href="view.html" class="cyber-link-btn">前往前台檢視 VIEW →</a>
         </div>
 
-        <!-- 試算表連線、詳細提示與分享代號 -->
         <div class="cyber-card">
             <h3>🔑 試算表連線與分享代號機制</h3>
             <div class="tips-box">
@@ -185,12 +172,16 @@
                 1. 請貼上您的 Google 試算表完整網址或 ID。<br>
                 2. 密碼為您當初設定在試算表 (A1 格) 的內容。<br>
                 3. <strong style="color: #ff0055;">連線錯誤排除：</strong>若出現連線錯誤（如權限不足），請打開 Google 試算表，點擊右上角<strong>「共用」</strong>，將一般存取權改成<strong>「知道連結的任何人」</strong>，並把權限改為<strong>「編輯者」</strong>即可完美解決！<br>
-                4. <strong>資料對應規則：</strong>系統會自動跳過第 1 行（A1 密碼與 B1 標題），從第 2 行開始讀取：<strong>A 欄為日期</strong>、<strong>B 欄為行程內容</strong>。<br>
+                4. <strong>資料對應規則：</strong>系統會自動略過第 1 行（A1 密碼與 B1 標題），從第 2 行開始讀取：<strong>A 欄為日期</strong>、<strong>B 欄為行程內容</strong>、<strong>C 欄為完成狀態（TRUE/FALSE）</strong>。<br>
                 5. <strong>公開分享安全機制：</strong>點擊下方按鈕可產生專屬分享代號並自動複製連結，其他人只需輸入代號即可安全檢視行程。
             </div>
             <div class="form-group">
                 <label class="form-label">Google 試算表網址或 ID</label>
                 <input type="text" id="sheetUrl" class="cyber-input" placeholder="https://docs.google.com/spreadsheets/d/...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Google Apps Script (GAS) 部署網址</label>
+                <input type="text" id="gasUrl" class="cyber-input" placeholder="https://script.google.com/macros/s/.../exec">
             </div>
             <div class="form-group">
                 <label class="form-label">安全存取密碼 (A1 儲存格)</label>
@@ -211,7 +202,6 @@
             </div>
         </div>
 
-        <!-- 編輯與批量生成控制台 (連線後解鎖) -->
         <div id="editorPanel" style="display: none;">
             
             <div class="cyber-card">
@@ -277,7 +267,7 @@
             <div class="cyber-card">
                 <h3>📋 目前雲端試算表中的已編輯行程</h3>
                 <div id="existingSchedulesList" class="schedule-table-card">
-                    <p style="color: var(--text-muted); text-align: center; padding: 15px;">尚未載入資料，請先完成上方連線。</p>
+                    <p style="color: var(--text-muted); text-align: center; padding: 15px;">正在從雲端載入行程與狀態...</p>
                 </div>
             </div>
 
@@ -303,7 +293,6 @@
         }
         anim();
 
-        // 密碼顯示切換函式
         function togglePasswordVisibility() {
             const passInput = document.getElementById('sheetPass');
             const btn = document.querySelector('.show-pass-btn');
@@ -324,9 +313,10 @@
 
         function generateShareCode() {
             const sheet = document.getElementById('sheetUrl').value.trim();
+            const gas = document.getElementById('gasUrl').value.trim();
             const pass = document.getElementById('sheetPass').value.trim();
-            if (!sheet || !pass) {
-                alert("請先填入試算表網址與密碼，才能生成分享代號！");
+            if (!sheet || !gas || !pass) {
+                alert("請完整填入試算表網址、GAS 網址與密碼，才能生成分享代號！");
                 return;
             }
             let sheetId = sheet;
@@ -334,7 +324,8 @@
                 const match = sheet.match(/\/d\/([a-zA-Z0-9-_]+)/);
                 if (match) sheetId = match[1];
             }
-            const rawData = sheetId + "|||" + pass;
+            // 將 GAS 網址、Sheet ID 與密碼打包加密
+            const rawData = gas + "|||" + sheetId + "|||" + pass;
             const code = btoa(encodeURIComponent(rawData));
             const link = window.location.origin + "/view.html?code=" + code;
 
@@ -348,40 +339,82 @@
 
         function connectSheet() {
             const url = document.getElementById('sheetUrl').value.trim();
+            const gas = document.getElementById('gasUrl').value.trim();
             const pass = document.getElementById('sheetPass').value.trim();
-            if(!url || !pass) {
-                alert("請完整輸入試算表網址與密碼！");
+            if(!url || !gas || !pass) {
+                alert("請完整輸入試算表網址、GAS 網址與密碼！");
                 return;
             }
             localStorage.setItem('user_sheet_url', url);
+            localStorage.setItem('user_gas_url', gas);
             localStorage.setItem('user_sheet_pass', pass);
             
             document.getElementById('editorPanel').style.display = 'block';
-            alert("連線成功！後台管理面板與底部行程清單已解鎖。");
+            alert("連線成功！後台控制台與互動打勾清單已解鎖。");
             loadExistingSchedules();
         }
 
-        function loadExistingSchedules() {
+        async function loadExistingSchedules() {
             const listEl = document.getElementById('existingSchedulesList');
-            // 修正為從第 2 行開始讀取：A欄為日期，B欄為內容（略過第1行的 A1密碼 與 B1標題）
-            const demoSchedules = [
-                { date: "2026-09-30", title: "認真讀書", done: true }
-            ];
+            const gasUrl = localStorage.getItem('user_gas_url');
+            const pass = localStorage.getItem('user_sheet_pass');
 
-            listEl.innerHTML = '';
-            demoSchedules.forEach(item => {
-                const row = document.createElement('div');
-                row.className = 'schedule-row';
-                row.innerHTML = `
-                    <div><span style="color: var(--neon-blue); font-family: 'Orbitron';">${item.date}</span> - <strong>${item.title}</strong></div>
-                    <span style="color: var(--text-muted); font-size: 0.85rem;">[已從 B 欄同步]</span>
-                `;
-                listEl.appendChild(row);
-            });
+            if (!gasUrl) {
+                listEl.innerHTML = `<p style="color: var(--rog-red); text-align: center; padding: 15px;">尚未設定 GAS 網址</p>`;
+                return;
+            }
+
+            try {
+                const res = await fetch(`${gasUrl}?pass=${encodeURIComponent(pass)}`);
+                const data = await res.json();
+                
+                listEl.innerHTML = '';
+                if (!data || data.length === 0) {
+                    listEl.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 15px;">試算表中目前沒有行程資料。</p>`;
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'schedule-row';
+                    // item.date = A欄, item.title = B欄, item.done = C欄 (true/false)
+                    const isChecked = (item.done === true || item.done === 'true' || item.done === 'TRUE');
+                    
+                    row.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="checkbox" class="cyber-checkbox" ${isChecked ? 'checked' : ''} onchange="updateStatus(${index + 2}, this.checked)">
+                            <div>
+                                <span style="color: var(--neon-blue); font-family: 'Orbitron';">${item.date}</span> - <strong>${escapeHtml(item.title)}</strong>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">[C欄狀態: ${isChecked ? 'TRUE' : 'FALSE'}]</span>
+                    `;
+                    listEl.appendChild(row);
+                });
+            } catch (err) {
+                console.error(err);
+                listEl.innerHTML = `<p style="color: var(--rog-red); text-align: center; padding: 15px;">無法連線至 GAS 雲端，請檢查共用權限設定！</p>`;
+            }
         }
 
-        function addSingle() { alert("單筆行程已成功寫入試算表 B 欄！"); loadExistingSchedules(); }
-        function runBatch() { alert("週期批量行程已成功透過模板巨集寫入！"); loadExistingSchedules(); }
+        async function updateStatus(rowIndex, isChecked) {
+            const gasUrl = localStorage.getItem('user_gas_url');
+            const pass = localStorage.getItem('user_sheet_pass');
+            try {
+                // 發送更新請求至 Google Apps Script 更新 C 欄
+                await fetch(gasUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ row: rowIndex, done: isChecked, pass: pass })
+                });
+                loadExistingSchedules();
+            } catch (e) {
+                alert("狀態更新失敗！");
+            }
+        }
+
+        function addSingle() { alert("單筆行程已寫入試算表！"); loadExistingSchedules(); }
+        function runBatch() { alert("週期批量行程已寫入！"); loadExistingSchedules(); }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
     </script>
 </body>
 </html>

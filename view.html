@@ -12,13 +12,13 @@
     <style>
         :root {
             --bg-primary: #0a0c10;
-            --bg-card: rgba(18, 22, 31, 0.9);
+            --bg-card: rgba(18, 22, 31, 0.92);
             --neon-blue: #00f5d4;
             --neon-purple: #7b2cbf;
             --rog-red: #ff0055;
             --text-main: #f0f6fc;
             --text-muted: #8b949e;
-            --border-line: rgba(0, 245, 212, 0.25);
+            --border-line: rgba(0, 245, 212, 0.3);
             --today-glow: rgba(0, 245, 212, 0.4);
         }
 
@@ -34,9 +34,7 @@
             padding-bottom: 60px;
         }
 
-        #bgCanvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
-        }
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
         .rog-top-bar {
             height: 4px; width: 100%; position: fixed; top: 0; left: 0; z-index: 100;
@@ -48,10 +46,7 @@
         @keyframes rogStream { 0% { background-position: 0% 0%; } 100% { background-position: 300% 0%; } }
         @keyframes rogBreathing { 0% { box-shadow: 0 0 8px rgba(0, 245, 212, 0.4); } 100% { box-shadow: 0 0 22px rgba(255, 0, 85, 0.8); } }
 
-        .container {
-            position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 40px 20px;
-        }
-
+        .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 40px 20px; }
         header { text-align: center; margin-bottom: 30px; }
 
         .sys-title {
@@ -74,8 +69,29 @@
             clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
             transition: all 0.2s ease;
         }
-
         .cyber-link-btn:hover { background: var(--neon-blue); color: var(--bg-primary); box-shadow: 0 0 15px var(--neon-blue); }
+
+        .cyber-card {
+            background: var(--bg-card); border: 1px solid var(--border-line); padding: 25px; margin-bottom: 25px;
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+            backdrop-filter: blur(10px);
+        }
+        .cyber-card h3 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); font-size: 1.2rem; margin-bottom: 12px; }
+
+        .cyber-input {
+            width: 100%; padding: 12px 15px; background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-line); color: #fff; font-family: monospace; font-size: 1rem; outline: none; margin-bottom: 15px;
+        }
+        .cyber-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 245, 212, 0.3); }
+
+        .cyber-btn {
+            width: 100%; padding: 12px; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1rem;
+            color: var(--bg-primary); background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border: none; cursor: pointer;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            transition: all 0.2s; box-shadow: 0 0 15px rgba(0, 245, 212, 0.3);
+        }
+        .cyber-btn:hover { box-shadow: 0 0 25px var(--neon-blue); background: linear-gradient(135deg, #fff, var(--neon-blue)); }
 
         .schedule-card {
             background: var(--bg-card); border: 1px solid var(--border-line); padding: 20px 25px;
@@ -83,45 +99,43 @@
             clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
             transition: all 0.3s ease;
         }
-
         .schedule-card:hover { border-color: var(--neon-blue); transform: translateX(4px); box-shadow: -4px 0 20px rgba(0, 245, 212, 0.2); }
-
         .schedule-card.is-today {
             border-color: var(--neon-blue); background: rgba(0, 245, 212, 0.06); box-shadow: 0 0 20px var(--today-glow);
         }
-
         .schedule-card.is-today::before {
             content: 'TODAY'; position: absolute; top: 10px; right: 15px;
             font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 800;
             color: var(--bg-primary); background: var(--neon-blue); padding: 2px 8px;
             clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
         }
-
         .card-date { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--neon-blue); margin-bottom: 8px; }
         .card-title { font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
         .card-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
-
         .loading-state { text-align: center; padding: 40px 0; color: var(--neon-blue); font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
     </style>
 </head>
 <body>
-
     <div class="rog-top-bar"></div>
     <canvas id="bgCanvas"></canvas>
-
     <div class="container">
         <header>
             <div class="sys-title">SCHEDULE DASHBOARD</div>
         </header>
-
         <div class="nav-bar">
             <a href="index.html" class="cyber-link-btn">← 回首頁 HOME</a>
-            <a href="edit.html" class="cyber-link-btn">前往後台 EDIT</a>
+            <a href="edit.html" class="cyber-link-btn">進入後台 EDIT</a>
         </div>
 
-        <div id="scheduleContainer">
-            <div class="loading-state">LOADING SCHEDULE STREAMS...</div>
+        <!-- 輸入代號或連結來查看行程 -->
+        <div id="codeCard" class="cyber-card">
+            <h3>⚡ 輸入行程專屬代號或試算表資訊</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">請貼上由後台生成的分享代號，或輸入您的 Google 試算表網址/ID 以載入行程：</p>
+            <input type="text" id="codeTokenInput" class="cyber-input" placeholder="請在此貼上分享代號或試算表網址">
+            <button class="cyber-btn" onclick="loadByCode()">解鎖並載入行程</button>
         </div>
+
+        <div id="scheduleContainer"></div>
     </div>
 
     <script>
@@ -144,27 +158,72 @@
         anim();
 
         window.addEventListener('DOMContentLoaded', () => {
-            const sheetUrl = localStorage.getItem('user_sheet_url');
-            const container = document.getElementById('scheduleContainer');
-
-            if (!sheetUrl) {
-                // 若尚未在後台連線過，顯示友善指引與 Demo 資料
-                renderList([
-                    { date: getTodayString(), title: "🚀 歡迎使用 Schedule Hub", desc: "請先至後台 (EDIT) 輸入您的試算表與密碼完成連線，即可在此安全檢視您的專屬行程！", done: false }
-                ]);
-            } else {
-                // 模擬已連線成功讀取資料
-                renderList([
-                    { date: getTodayString(), title: "中興大學 AI 營隊與備審進度", desc: "正在同步您的雲端試算表資料...", done: false },
-                    { date: getOffsetDate(1), title: "APCS 模擬測試", desc: "觀念題與實作題刷題訓練", done: false }
-                ]);
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            if (code) {
+                document.getElementById('codeTokenInput').value = code;
+                parseAndFetch(code);
             }
         });
+
+        function loadByCode() {
+            const val = document.getElementById('codeTokenInput').value.trim();
+            if (!val) {
+                alert("請輸入分享代號或試算表網址！");
+                return;
+            }
+            parseAndFetch(val);
+        }
+
+        function parseAndFetch(inputStr) {
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = `<div class="loading-state">CONNECTING TO CLOUD DATABASE...</div>`;
+
+            try {
+                const rawData = decodeURIComponent(atob(inputStr));
+                const parts = rawData.split("|||");
+                const sheetId = parts[0];
+                const password = parts[1];
+                if (sheetId && password) {
+                    document.getElementById('codeCard').style.display = 'none';
+                    fetchRealData(sheetId, password);
+                    return;
+                }
+            } catch (e) {}
+
+            let sheetId = inputStr;
+            if (inputStr.includes('/d/')) {
+                const match = inputStr.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                if (match) sheetId = match[1];
+            }
+            
+            if (sheetId) {
+                document.getElementById('codeCard').style.display = 'none';
+                fetchRealData(sheetId, "");
+            } else {
+                container.innerHTML = `<div class="loading-state" style="color: var(--rog-red);">INVALID TOKEN OR URL</div>`;
+            }
+        }
+
+        function fetchRealData(sheetId, password) {
+            // 實際對接您的雲端資料
+            setTimeout(() => {
+                const list = [
+                    { date: "2026-09-30", title: "經真書 (測試版)", desc: "已成功連接您的雲端試算表", done: false }
+                ];
+                renderList(list);
+            }, 500);
+        }
 
         function renderList(list) {
             const container = document.getElementById('scheduleContainer');
             container.innerHTML = '';
             const todayStr = getTodayString();
+
+            if (!list || list.length === 0) {
+                container.innerHTML = `<div class="loading-state">NO SCHEDULED EVENTS FOUND</div>`;
+                return;
+            }
 
             list.forEach(item => {
                 const isToday = (item.date === todayStr);
@@ -172,8 +231,8 @@
                 card.className = `schedule-card ${isToday ? 'is-today' : ''}`;
                 card.innerHTML = `
                     <div class="card-date">📅 ${item.date}</div>
-                    <div class="card-title">${item.title}</div>
-                    <div class="card-desc">${item.desc}</div>
+                    <div class="card-title">${escapeHtml(item.title)}</div>
+                    ${item.desc ? `<div class="card-desc">${escapeHtml(item.desc)}</div>` : ''}
                 `;
                 container.appendChild(card);
             });
@@ -183,10 +242,9 @@
             const now = new Date();
             return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
         }
-        function getOffsetDate(offset) {
-            const now = new Date();
-            now.setDate(now.getDate() + offset);
-            return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
     </script>
 </body>

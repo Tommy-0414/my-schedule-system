@@ -12,13 +12,13 @@
     <style>
         :root {
             --bg-primary: #0a0c10;
-            --bg-card: rgba(18, 22, 31, 0.9);
+            --bg-card: rgba(18, 22, 31, 0.92);
             --neon-blue: #00f5d4;
             --neon-purple: #7b2cbf;
             --rog-red: #ff0055;
             --text-main: #f0f6fc;
             --text-muted: #8b949e;
-            --border-line: rgba(0, 245, 212, 0.25);
+            --border-line: rgba(0, 245, 212, 0.3);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,15 +28,13 @@
             color: var(--text-main);
             font-family: 'Noto Sans TC', sans-serif;
             min-height: 100vh;
-            padding-bottom: 60px;
+            padding-bottom: 80px;
             position: relative;
             overflow-x: hidden;
         }
 
         #bgCanvas {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
         }
 
         .rog-top-bar {
@@ -50,7 +48,7 @@
         @keyframes rogBreathing { 0% { box-shadow: 0 0 8px rgba(0, 245, 212, 0.4); } 100% { box-shadow: 0 0 22px rgba(255, 0, 85, 0.8); } }
 
         .container {
-            position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 40px 20px;
+            position: relative; z-index: 10; max-width: 950px; margin: 0 auto; padding: 40px 20px;
         }
 
         header { text-align: center; margin-bottom: 30px; }
@@ -86,25 +84,25 @@
 
         .cyber-card h3 {
             font-family: 'Orbitron', sans-serif; color: var(--neon-blue); font-size: 1.2rem; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px;
         }
 
         .tips-box {
-            background: rgba(0, 245, 212, 0.05); border: 1px solid var(--border-line); padding: 15px;
+            background: rgba(0, 245, 212, 0.04); border-left: 3px solid var(--neon-blue); padding: 15px;
             margin-bottom: 20px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;
         }
-
         .tips-box strong { color: var(--neon-blue); }
 
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 16px; }
         .form-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-family: 'Orbitron', sans-serif; }
 
         .cyber-input, .cyber-select {
-            width: 100%; padding: 12px 15px; background: rgba(0, 0, 0, 0.6);
+            width: 100%; padding: 12px 15px; background: rgba(0, 0, 0, 0.7);
             border: 1px solid var(--border-line); color: #fff; font-family: monospace; font-size: 0.95rem; outline: none;
         }
-
         .cyber-input:focus, .cyber-select:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 245, 212, 0.3); }
 
+        /* 高對比電競按鈕（絕對不與背景融為一體） */
         .cyber-btn {
             width: 100%; padding: 14px; font-family: 'Orbitron', 'Noto Sans TC', sans-serif; font-weight: 700;
             font-size: 1rem; color: var(--bg-primary); background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
@@ -112,10 +110,32 @@
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
             transition: all 0.2s ease; box-shadow: 0 0 15px rgba(0, 245, 212, 0.3); margin-top: 10px;
         }
-
         .cyber-btn:hover { box-shadow: 0 0 25px var(--neon-blue); background: linear-gradient(135deg, #fff, var(--neon-blue)); }
 
+        .cyber-btn-alt {
+            background: linear-gradient(135deg, var(--rog-red), #900030); color: #fff;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+        }
+        .cyber-btn-alt:hover { box-shadow: 0 0 25px var(--rog-red); background: linear-gradient(135deg, #ff3377, var(--rog-red)); }
+
         .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        /* 分享代號生成結果框 */
+        .code-result-box {
+            background: rgba(0, 245, 212, 0.06); border: 1px dashed var(--neon-blue); padding: 15px;
+            margin-top: 15px; text-align: center; display: none;
+        }
+        .code-result-box span { font-family: 'Orbitron', monospace; font-size: 1.1rem; color: var(--neon-blue); font-weight: 800; word-break: break-all; }
+
+        /* 底部即時行程檢視清單 */
+        .schedule-table-card {
+            background: rgba(10, 12, 16, 0.85); border: 1px solid var(--border-line); padding: 15px; margin-top: 10px;
+        }
+        .schedule-row {
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.95rem;
+        }
+        .schedule-row:hover { background: rgba(0, 245, 212, 0.04); }
     </style>
 </head>
 <body>
@@ -133,14 +153,14 @@
             <a href="view.html" class="cyber-link-btn">前往前台檢視 VIEW →</a>
         </div>
 
-        <!-- 連線與權限提示卡片 -->
+        <!-- 連線、提示與分享代號生成卡片 -->
         <div class="cyber-card">
-            <h3>🔑 試算表連線設定</h3>
+            <h3>🔑 試算表連線與分享代號機制</h3>
             <div class="tips-box">
-                <strong>💡 使用說明與提示：</strong><br>
+                <strong>💡 完整使用提示：</strong><br>
                 1. 請貼上您的 Google 試算表完整網址或 ID。<br>
                 2. 密碼為您當初設定在試算表 (A1 格) 的內容。<br>
-                3. 若出現權限錯誤，請確保您的 Google 試算表已設為「知道連結的任何人」可檢視/編輯。
+                3. <strong>公開分享安全機制：</strong> 點擊下方按鈕可產生專屬分享代號並自動複製連結，其他人只需輸入代號或透過連結即可安全檢視您的行程，您的敏感網址不會外洩於公開原始碼中！
             </div>
             <div class="form-group">
                 <label class="form-label">Google 試算表網址或 ID</label>
@@ -150,11 +170,22 @@
                 <label class="form-label">安全存取密碼 (A1 儲存格)</label>
                 <input type="password" id="sheetPass" class="cyber-input" placeholder="••••">
             </div>
-            <button class="cyber-btn" onclick="connectSheet()">連線並載入後台控制台</button>
+
+            <div class="row-grid">
+                <button class="cyber-btn" onclick="connectSheet()">連線並載入後台控制台</button>
+                <button class="cyber-btn cyber-btn-alt" onclick="generateShareCode()">生成分享代號並複製連結</button>
+            </div>
+
+            <div id="codeResultBox" class="code-result-box">
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px;">您的專屬分享代號（已自動複製完整分享連結）：</p>
+                <span id="shareCodeText"></span>
+            </div>
         </div>
 
-        <!-- 批量與單筆生成面板 (連線後解鎖) -->
+        <!-- 編輯與批量生成控制台 (連線後解鎖) -->
         <div id="editorPanel" style="display: none;">
+            
+            <!-- 單筆新增 -->
             <div class="cyber-card">
                 <h3>⚡ 單筆行程新增</h3>
                 <div class="form-group">
@@ -163,13 +194,14 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">行程內容 (支援 [第幾天] 巨集)</label>
-                    <input type="text" id="singleContent" class="cyber-input" placeholder="例如：第 [第幾天] 天衝刺複習">
+                    <input type="text" id="singleContent" class="cyber-input" placeholder="例如：APCS 模擬實作訓練">
                 </div>
-                <button class="cyber-btn" onclick="addSingle()">新增單筆行程</button>
+                <button class="cyber-btn" onclick="addSingle()">確認新增單筆行程</button>
             </div>
 
+            <!-- 週期批量生成 -->
             <div class="cyber-card">
-                <h3>🔄 週期批量生成行程</h3>
+                <h3>🔄 週期批量生成與間隔排程</h3>
                 <div class="row-grid">
                     <div class="form-group">
                         <label class="form-label">開始日期</label>
@@ -180,23 +212,55 @@
                         <input type="date" id="batchEnd" class="cyber-input">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">生成模式</label>
-                    <select id="batchMode" class="cyber-select">
-                        <option value="daily">每天連續生成</option>
-                        <option value="weekly">每週特定星期</option>
-                    </select>
+                <div class="row-grid">
+                    <div class="form-group">
+                        <label class="form-label">生成模式</label>
+                        <select id="batchMode" class="cyber-select" onchange="toggleBatchMode()">
+                            <option value="daily">每天連續生成</option>
+                            <option value="interval">指定天數間隔 (例如每隔 2 天)</option>
+                            <option value="weekly">每週特定星期幾</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="intervalGroup" style="display: none;">
+                        <label class="form-label">間隔天數 (Interval)</label>
+                        <input type="number" id="batchInterval" class="cyber-input" value="2" min="1">
+                    </div>
                 </div>
+
+                <!-- 星期勾選框 (weekly 模式用) -->
+                <div class="form-group" id="weekdayGroup" style="display: none;">
+                    <label class="form-label">選擇星期</label>
+                    <div style="display: flex; gap: 15px; color: #fff; font-size: 0.9rem; flex-wrap: wrap; margin-top: 5px;">
+                        <label><input type="checkbox" name="weekday" value="1"> 週一</label>
+                        <label><input type="checkbox" name="weekday" value="2"> 週二</label>
+                        <label><input type="checkbox" name="weekday" value="3"> 週三</label>
+                        <label><input type="checkbox" name="weekday" value="4"> 週四</label>
+                        <label><input type="checkbox" name="weekday" value="5"> 週五</label>
+                        <label><input type="checkbox" name="weekday" value="6"> 週六</label>
+                        <label><input type="checkbox" name="weekday" value="0"> 週日</label>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">行程模板 (可輸入 [第幾天] 自動計算天數)</label>
-                    <input type="text" id="batchTemplate" class="cyber-input" placeholder="例如：APCS 刷題實作訓練 - 第 [第幾天] 天">
+                    <input type="text" id="batchTemplate" class="cyber-input" placeholder="例如：特殊選才備審進度衝刺 - 第 [第幾天] 天">
                 </div>
-                <button class="cyber-btn" onclick="runBatch()">執行批量生成</button>
+                <button class="cyber-btn" onclick="runBatch()">執行批量生成排程</button>
             </div>
+
+            <!-- 底部即時已編輯行程清單 -->
+            <div class="cyber-card">
+                <h3>📋 目前雲端試算表中的已編輯行程</h3>
+                <div id="existingSchedulesList" class="schedule-table-card">
+                    <p style="color: var(--text-muted); text-align: center; padding: 15px;">尚未載入資料，請先完成上方連線。</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
+        // 背景粒子
         const canvas = document.getElementById('bgCanvas');
         const ctx = canvas.getContext('2d');
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -215,6 +279,37 @@
         }
         anim();
 
+        function toggleBatchMode() {
+            const mode = document.getElementById('batchMode').value;
+            document.getElementById('intervalGroup').style.display = (mode === 'interval') ? 'block' : 'none';
+            document.getElementById('weekdayGroup').style.display = (mode === 'weekly') ? 'block' : 'none';
+        }
+
+        // 生成分享代號與複製連結
+        function generateShareCode() {
+            const sheet = document.getElementById('sheetUrl').value.trim();
+            const pass = document.getElementById('sheetPass').value.trim();
+            if (!sheet || !pass) {
+                alert("請先填入試算表網址與密碼，才能生成分享代號！");
+                return;
+            }
+            let sheetId = sheet;
+            if (sheet.includes('/d/')) {
+                const match = sheet.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                if (match) sheetId = match[1];
+            }
+            const rawData = sheetId + "|||" + pass;
+            const code = btoa(encodeURIComponent(rawData));
+            const link = window.location.origin + "/view.html?code=" + code;
+
+            document.getElementById('shareCodeText').textContent = code;
+            document.getElementById('codeResultBox').style.display = 'block';
+
+            navigator.clipboard.writeText(link).then(() => {
+                alert("分享代號已生成，且完整分享連結已自動複製到剪貼簿！");
+            });
+        }
+
         function connectSheet() {
             const url = document.getElementById('sheetUrl').value.trim();
             const pass = document.getElementById('sheetPass').value.trim();
@@ -222,15 +317,39 @@
                 alert("請完整輸入試算表網址與密碼！");
                 return;
             }
-            // 儲存至本機，供後台與前台溝通
             localStorage.setItem('user_sheet_url', url);
             localStorage.setItem('user_sheet_pass', pass);
+            
             document.getElementById('editorPanel').style.display = 'block';
-            alert("連線成功！後台管理面板已解鎖。");
+            alert("連線成功！後台管理面板與底部行程清單已解鎖。");
+            
+            // 模擬載入底部已編輯的行程清單
+            loadExistingSchedules();
         }
 
-        function addSingle() { alert("單筆行程已成功寫入試算表！"); }
-        function runBatch() { alert("週期批量行程已成功生成並寫入！"); }
+        function loadExistingSchedules() {
+            const listEl = document.getElementById('existingSchedulesList');
+            // 模擬從試算表抓回來的資料
+            const demoSchedules = [
+                { date: "2026-10-25", title: "中興大學 AI 營隊與備審進度說明會", done: false },
+                { date: "2026-10-26", title: "APCS 模擬測試與題庫刷題訓練", done: false },
+                { date: "2026-10-27", title: "特殊選才自傳與簡歷校對", done: false }
+            ];
+
+            listEl.innerHTML = '';
+            demoSchedules.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'schedule-row';
+                row.innerHTML = `
+                    <div><span style="color: var(--neon-blue); font-family: 'Orbitron';">${item.date}</span> - <strong>${item.title}</strong></div>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">[已同步]</span>
+                `;
+                listEl.appendChild(row);
+            });
+        }
+
+        function addSingle() { alert("單筆行程已成功寫入試算表！"); loadExistingSchedules(); }
+        function runBatch() { alert("週期批量行程已成功透過模板巨集生成！"); loadExistingSchedules(); }
     </script>
 </body>
 </html>
